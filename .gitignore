@@ -1,0 +1,39 @@
+# ===================================
+# ENVIRONMENT VARIABLES — never commit!
+# ===================================
+.env
+.env.local
+.env.*.local
+
+# ===================================
+# PYTHON / DJANGO
+# ===================================
+__pycache__/
+*.py[cod]
+*.pyo
+db.sqlite3
+*.sqlite3
+
+# Virtual environment folders
+venv/
+env/
+.venv/
+
+# Django static files (generated, not source)
+staticfiles/
+media/
+
+# ===================================
+# NODE / VUE FRONTEND
+# ===================================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ===================================
+# EDITORS & OS
+# ===================================
+.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,23 @@
+# Django Framework 
+# Version 5.2.13  
+Django==5.2.13
+
+# psycopg2-binary - PostgreSQL database driver for Python
+# Allows Django to communicate with PostgreSQL
+psycopg2-binary==2.9.9
+
+# djangorestframework - For building REST APIs (we'll use this later for Vue.js)
+# This converts our Django models into JSON endpoints
+djangorestframework==3.14.0
+
+# python-decouple - For loading environment variables from .env file
+# This is a security best practice (keeps secrets out of code)
+python-decouple==3.8
+
+# django-cors-headers - Adds CORS headers to Django responses
+# Required so the Vue.js frontend (localhost:5173) can call the Django API (localhost:8000)
+django-cors-headers==4.3.1
+
+# djangorestframework-simplejwt - JWT authentication for Django REST Framework. 
+# Repleaces session cookies with tokens - required for SPA authentication
+djangorestframework-simplejwt==5.5.1  
