@@ -74,7 +74,7 @@ class TicketComment(models.Model):
        on_delete=models.CASCADE,
        related_name='comments',
     )
-    #Authot of the ticket
+    #Autor of the ticket
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

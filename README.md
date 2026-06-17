@@ -36,20 +36,19 @@ Built as a full-stack project using Django REST Framework and Vue.js.
 
 ## Project Structure
 
+```
 SupplyFlowApp/
-├── config/          # Django settings, URLs, WSGI
-├── tickets/         # Main Django app (models, views, serializers, URLs)
-├── frontend/        # Vue.js application
-│   ├── src/
-│   │   ├── views/       # LoginView, RegisterView, TicketsView
-│   │   ├── components/  # Reusable Vue components
-│   │   ├── services/    # Axios API client (api.js)
-│   │   └── router/      # Vue Router configuration
-├── .env             # Environment variables (not committed)
+├── config/ # Django settings, URLs, WSGI
+├── tickets/ # Models, views, serializers, URLs
+├── frontend/
+│   └── src/
+│       ├── views/ # LoginView, RegisterView, TicketsView
+│       ├── components/ # Reusable Vue components
+│       ├── services/# Axios API client (api.js)
+│       └── router/ # Vue Router configuration
+├── .env # Environment variables (not committed)
 ├── manage.py
-└── requirements.txt
-
----
+└──
 
 ## Getting Started
 
@@ -111,5 +110,7 @@ Method	Endpoint	Description
 
 Author
 Jaroslaw Dziadziak
+
+
 
 

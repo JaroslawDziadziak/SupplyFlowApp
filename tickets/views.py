@@ -24,7 +24,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     This is called "CRUD" (Create, Read, Update, Delete)
     """
     
-    # Use TicketSerializer to convert model <-> JSON
+    # Useing TicketSerializer to convert model <-> JSON
     serializer_class = TicketSerializer
     
     # Only authenticated users can access this API
@@ -108,10 +108,10 @@ class TicketCommentViewSet(viewsets.ModelViewSet):
         
 class RegisterView(generics.CreateAPIView):
     # CreateAPIView automatically handles POST requests for creating objects
-    # We only need to specify which serializer and permissions to use
+    # Only need to specify which serializer and permissions to use
     serializer_class = UserRegistrationSerializer
     
-    # AllowAny — this endpoint must be public, anyone can register
+    # AllowAny — this endpoint is public, anyone can register
     # Without this, only logged-in users could create accounts 
     permission_classes = [AllowAny]    
     
@@ -120,7 +120,7 @@ class UserListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        # Return only id and username — never expose passwords or emails in lists
+        # Returns only id and username — never expose passwords or emails in lists
         users = User.objects.values('id', 'username').order_by('username')
         return Response(list(users))
     
