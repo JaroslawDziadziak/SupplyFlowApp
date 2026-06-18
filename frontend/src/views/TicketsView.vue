@@ -14,15 +14,25 @@
 
       <!-- Ticket filter options -->
       <div class="filter-section">
-        <p class="filter-label">Filter by</p>
-        <button
-          v-for="option in filterOptions"
-          :key="option.value"
-          :class="['filter-btn', { active: activeFilter === option.value }]"
-          @click="activeFilter = option.value"
-        >
-          {{ option.label }}
-        </button>
+          <p class="filter-label">Filter by</p>
+          <button
+            v-for="option in filterOptions"
+            :key="option.value"
+            :class="['filter-btn', { active: activeFilter === option.value }]"
+            @click="activeFilter = option.value"
+          >
+            {{ option.label }}
+          </button>
+
+          <p class="filter-label status-label">Status</p>
+          <button
+            v-for="option in statusFilterOptions"
+            :key="option.value"
+            :class="['filter-btn', { active: statusFilter === option.value }]"
+            @click="statusFilter = option.value"
+          >
+            {{ option.label }}
+          </button>
       </div>
 
       <button @click="handleLogout" class="logout-btn">Log out</button>
@@ -144,6 +154,24 @@
             </span>
             <span class="meta-info">Created by: {{ selectedTicket.created_by }}</span>
             <span class="meta-info">Assigned to: {{ selectedTicket.assigned_to_name || '—' }}</span>
+          </div>
+
+          <!-- Ticket lifecycle actions — only the assigned user can change status this way -->
+          <div v-if="isAssignedToMe" class="ticket-actions">
+            <button
+              v-if="selectedTicket.status === 'New'"
+              @click="handleStartWorking"
+              class="submit-btn small-btn"
+            >
+              Start Working
+            </button>
+            <button
+              v-if="selectedTicket.status !== 'Closed'"
+              @click="handleCloseTicket"
+              class="cancel-btn small-btn"
+            >
+              Close Ticket
+            </button>
           </div>
 
           <!-- Reassign — visible only if ticket is assigned to current user -->
@@ -271,6 +299,16 @@ const filterOptions = [
   { label: 'Assigned to me', value: 'assigned' },
 ]
 
+// Status filter — 'all' | 'new' | 'open' | 'closed'
+const statusFilter = ref('all')
+
+const statusFilterOptions = [
+  { label: 'New Tickets', value: 'new' },
+  { label: 'Open Tickets', value: 'open' },
+  { label: 'Closed Tickets', value: 'closed' },
+  { label: 'All Statuses', value: 'all' },
+]
+
 // CREATE MODAL state
 const showCreateModal = ref(false)
 const modalError = ref('')
@@ -286,18 +324,29 @@ const reassignTo = ref(null)
 
 // Computed: filter tickets based on active sidebar filter
 const filteredTickets = computed(() => {
+  let result = tickets.value
+
+  // Filter by creator / assignee relationship
   if (activeFilter.value === 'mine') {
-    // created_by is a username string — compare with current user's username
-    return tickets.value.filter(t => t.created_by === currentUser.username)
+    result = result.filter(t => t.created_by === currentUser.username)
+  } else if (activeFilter.value === 'assigned') {
+    result = result.filter(t => t.assigned_to === currentUser.id)
   }
-  if (activeFilter.value === 'assigned') {
-    // assigned_to is a user ID number — compare with current user's id
-    return tickets.value.filter(t => t.assigned_to === currentUser.id)
+
+  // Filter by ticket status (lifecycle stage)
+  if (statusFilter.value === 'new') {
+    result = result.filter(t => t.status === 'New')
+  } else if (statusFilter.value === 'open') {
+    result = result.filter(t => t.status === 'In_progress')
+  } else if (statusFilter.value === 'closed') {
+    result = result.filter(t => t.status === 'Closed')
   }
-  return tickets.value
+
+  return result
 })
 
-// Can the current user edit this ticket? Only the creator can
+// ── API CALLS ──────────────────────────────────────────────
+//Only the creator can edit this ticket
 const canEdit = computed(() => {
   return selectedTicket.value?.created_by === currentUser.username
 })
@@ -307,7 +356,6 @@ const isAssignedToMe = computed(() => {
   return selectedTicket.value?.assigned_to === currentUser.id
 })
 
-// ── API CALLS ──────────────────────────────────────────────
 
 async function fetchTickets() {
   try {
@@ -378,6 +426,31 @@ async function handleReassign() {
     console.error('Failed to reassign ticket:', error)
   }
 }
+
+async function handleStartWorking() {
+  try {
+    await api.patch(`/tickets/${selectedTicket.value.id}/`, {
+      status: 'In_progress',
+    })
+    await fetchTickets()
+    selectedTicket.value = tickets.value.find(t => t.id === selectedTicket.value.id)
+  } catch (error) {
+    console.error('Failed to update ticket status:', error)
+  }
+}
+
+async function handleCloseTicket() {
+  try {
+    await api.patch(`/tickets/${selectedTicket.value.id}/`, {
+      status: 'Closed',
+    })
+    await fetchTickets()
+    selectedTicket.value = tickets.value.find(t => t.id === selectedTicket.value.id)
+  } catch (error) {
+    console.error('Failed to close ticket:', error)
+  }
+}
+
 
 async function handleAddComment() {
   if (!newComment.value.trim()) return
@@ -795,6 +868,14 @@ onMounted(() => {
 .reassign-section select {
   flex: 1;
   min-width: 150px;
+}
+
+.status-label { margin-top: 1rem; }
+
+.ticket-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 /* Comments */
